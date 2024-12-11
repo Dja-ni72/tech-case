@@ -15,6 +15,12 @@ const courseSchema = new Schema(
       required: true,
       maxLength: 256,
     },
+    code: {
+      type: String,
+      required: true,
+      index: true,
+      unique: true,
+    },
     questions: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: "Question",

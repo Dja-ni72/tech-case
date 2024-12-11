@@ -6,8 +6,8 @@ const CourseModel = require("../db/models/course-model");
  * @param {string}
  * @returns {Promise<Array<Course>>} List of courses
  */
-const getAll = (filter = {}, projection = '') => {
-  return CourseModel.find(filter, projection);
+const getAll = (filter = {}, projection = 'code title description') => {
+  return CourseModel.find(filter, projection); 
 };
 
 /**
@@ -16,7 +16,7 @@ const getAll = (filter = {}, projection = '') => {
  * @param {String} projection 
  * @returns {Promise<Course>} Course
  */
-const getById = (courseId, projection = '') => {
+const getById = (courseId, projection = 'code title description') => {
   return CourseModel.findById(courseId, projection);
 };
 
@@ -34,9 +34,18 @@ const getByCode = (courseCode) => {
  * @param {Course} course Course properties
  * @returns {Promise<Course>} Created course
  */
-const create = (course) => {
+function generateRandomCode() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+}
+const create = async (course) => {
+  let code;
+  do {
+    code = generateRandomCode();
+} while (await CourseModel.findOne({ code }));
   const newCourse = new CourseModel({
     ...course,
+    code,
   });
 
   return newCourse.save();
@@ -49,14 +58,14 @@ const create = (course) => {
  * @returns {Promise<Course>} Updated course
  */
 const update = async (courseId, partialCourse) => {
+  const { code, ...updates } = partialCourse;
+
   await CourseModel.findOneAndUpdate(
     { _id: courseId },
     {
-      $set: {
-        ...partialCourse,
-      },
-      upsert: true,
-    }
+      $set: updates,
+    },
+    { new: true }
   );
 
   return CourseModel.findById(courseId);

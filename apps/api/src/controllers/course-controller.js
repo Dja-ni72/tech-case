@@ -5,7 +5,7 @@ const courseService = require("../services/course-service");
  */
 const list = async (_req, res, next) => {
   try {
-    const courses = await courseService.getAll({}, '_id title description');
+    const courses = await courseService.getAll({}, 'code title description');
     res.status(200).json(courses);
   } catch (err) {
     return next(err);
@@ -17,7 +17,7 @@ const list = async (_req, res, next) => {
  */
 const get = async (req, res, next) => {
   try {
-    const course = await courseService.getById(req.params.courseId, '_id title description');
+    const course = await courseService.getById(req.params.courseId, 'code title description');
 
     res.status(200).json(course);
   } catch (err) {

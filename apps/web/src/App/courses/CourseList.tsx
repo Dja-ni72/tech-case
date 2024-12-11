@@ -8,13 +8,14 @@ import { Course } from "../../models/course.model";
 import { DataType } from "../../models/data-type.model";
 import * as S from './CourseList.styles'
 
-type CourseListItem = DataType<Pick<Course, '_id'>>
+type CourseListItem = DataType<Pick<Course, 'code' | 'title' | 'description'>>
 
 const columns: ColumnsType<CourseListItem> = [
   {
-    title: 'ID',
-    dataIndex: '_id',
-    key: '_id',
+    title: 'Code',
+    dataIndex: 'code',
+    key: 'code',
+    render: (code: string) => <strong>{code}</strong>,
   },
   {
     title: 'Title',
@@ -30,8 +31,8 @@ const columns: ColumnsType<CourseListItem> = [
 
 function transformCoursesToDatasource(courses: Course[]): CourseListItem[] {
   return courses.map(course => ({
-    key: course._id,
-    _id: course._id,
+    key: course.code,
+    code: course.code,
     title: course.title,
     description: course.description,
   }));
@@ -55,7 +56,7 @@ export const CourseList = () => {
   }, [courses]);
 
   function handleCourseClick(course: CourseListItem) {
-    navigate(`./${course._id}`);
+    navigate(`./${course.code}`);
   }
 
   return (
