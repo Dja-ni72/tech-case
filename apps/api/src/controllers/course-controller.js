@@ -3,9 +3,18 @@ const courseService = require("../services/course-service");
 /**
  * List courses
  */
-const list = async (_req, res, next) => {
+const list = async (req, res, next) => {
   try {
-    const courses = await courseService.getAll({}, 'code title description');
+    const search = req.query.search || '';
+    const filter = search
+      ? {
+          $or: [
+            { code: { $regex: search, $options: 'i' } }, 
+            { title: { $regex: search, $options: 'i' } }, 
+          ],
+        }
+      : {};
+    const courses = await courseService.getAll(filter);
     res.status(200).json(courses);
   } catch (err) {
     return next(err);

@@ -1,4 +1,4 @@
-import { Card, Table } from "antd";
+import { Card, Table, Input } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -6,9 +6,9 @@ import { useNavigate } from "react-router-dom";
 import { fetchCourses } from '../../api-services/courses.api-service';
 import { Course } from "../../models/course.model";
 import { DataType } from "../../models/data-type.model";
-import * as S from './CourseList.styles'
+import * as S from './CourseList.styles';
 
-type CourseListItem = DataType<Pick<Course, 'code' | 'title' | 'description'>>
+type CourseListItem = DataType<Pick<Course, 'code' | 'title' | 'description'>>;
 
 const columns: ColumnsType<CourseListItem> = [
   {
@@ -42,14 +42,15 @@ export const CourseList = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
   const [coursesDataSource, setCoursesDataSource] = useState<CourseListItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>(''); // State for search query
 
   useEffect(() => {
-    async function getCourses() {
-      const coursesPayload = await fetchCourses();
+    async function getCourses(query = '') {
+      const coursesPayload = await fetchCourses(query); // Pass the query to the API service
       setCourses(coursesPayload);
     }
-    getCourses();
-  }, []);
+    getCourses(searchQuery);
+  }, [searchQuery]); // Re-fetch courses when the search query changes
 
   useEffect(() => {
     setCoursesDataSource(transformCoursesToDatasource(courses));
@@ -59,15 +60,18 @@ export const CourseList = () => {
     navigate(`./${course.code}`);
   }
 
+  function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setSearchQuery(event.target.value); // Update search query on every keystroke
+  }
+
   return (
     <S.Wrapper>
-      {/* Uncomment the following code for step 6 and implement the missing parts to enable search */}
-      {/*<S.SearchInput*/}
-      {/*  defaultValue={searchQuery}*/}
-      {/*  onChange={handleSearchChange}*/}
-      {/*  placeholder='Search for a course by ID or name'*/}
-      {/*  prefix={<S.SearchIcon icon={faSearch} />}*/}
-      {/*/>*/}
+      {/* Search Input for filtering courses */}
+      <Input
+        value={searchQuery}
+        onChange={handleSearchChange}
+        placeholder="Search for a course by code or title"
+      />
 
       <Card>
         <Table
