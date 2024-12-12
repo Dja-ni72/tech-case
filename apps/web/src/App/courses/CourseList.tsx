@@ -3,34 +3,34 @@ import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { fetchCourses } from '../../api-services/courses.api-service';
+import { fetchCourses } from "../../api-services/courses.api-service";
 import { Course } from "../../models/course.model";
 import { DataType } from "../../models/data-type.model";
-import * as S from './CourseList.styles';
+import * as S from "./CourseList.styles";
 
-type CourseListItem = DataType<Pick<Course, 'code' | 'title' | 'description'>>;
+type CourseListItem = DataType<Pick<Course, "code" | "title" | "description">>;
 
 const columns: ColumnsType<CourseListItem> = [
   {
-    title: 'Code',
-    dataIndex: 'code',
-    key: 'code',
+    title: "Code",
+    dataIndex: "code",
+    key: "code",
     render: (code: string) => <strong>{code}</strong>,
   },
   {
-    title: 'Title',
-    dataIndex: 'title',
-    key: 'title',
+    title: "Title",
+    dataIndex: "title",
+    key: "title",
   },
   {
-    title: 'Description',
-    dataIndex: 'description',
-    key: 'description',
-  }
+    title: "Description",
+    dataIndex: "description",
+    key: "description",
+  },
 ];
 
 function transformCoursesToDatasource(courses: Course[]): CourseListItem[] {
-  return courses.map(course => ({
+  return courses.map((course) => ({
     key: course.code,
     code: course.code,
     title: course.title,
@@ -40,17 +40,17 @@ function transformCoursesToDatasource(courses: Course[]): CourseListItem[] {
 
 export const CourseList = () => {
   const navigate = useNavigate();
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]); // Explicitly typed
   const [coursesDataSource, setCoursesDataSource] = useState<CourseListItem[]>([]);
-  const [searchQuery, setSearchQuery] = useState<string>(''); // State for search query
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
-    async function getCourses(query = '') {
-      const coursesPayload = await fetchCourses(query); // Pass the query to the API service
+    async function getCourses(query = "") {
+      const coursesPayload: Course[] = await fetchCourses(query); // Type the API response
       setCourses(coursesPayload);
     }
     getCourses(searchQuery);
-  }, [searchQuery]); // Re-fetch courses when the search query changes
+  }, [searchQuery]);
 
   useEffect(() => {
     setCoursesDataSource(transformCoursesToDatasource(courses));
@@ -61,12 +61,11 @@ export const CourseList = () => {
   }
 
   function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setSearchQuery(event.target.value); // Update search query on every keystroke
+    setSearchQuery(event.target.value);
   }
 
   return (
     <S.Wrapper>
-      {/* Search Input for filtering courses */}
       <Input
         value={searchQuery}
         onChange={handleSearchChange}
@@ -77,10 +76,10 @@ export const CourseList = () => {
         <Table
           columns={columns}
           dataSource={coursesDataSource}
-          onRow={course => ({
+          onRow={(course) => ({
             onClick: () => handleCourseClick(course),
           })}
-          scroll={{ y: '80vh' }}
+          scroll={{ y: "80vh" }}
         />
       </Card>
     </S.Wrapper>

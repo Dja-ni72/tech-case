@@ -1,4 +1,5 @@
 const courseService = require("../services/course-service");
+const questionService = require("../services/question-service");
 
 /**
  * List courses
@@ -26,9 +27,12 @@ const list = async (req, res, next) => {
  */
 const get = async (req, res, next) => {
   try {
-    const course = await courseService.getById(req.params.courseId, 'code title description');
-
-    res.status(200).json(course);
+    const course = await courseService.getByCode(req.params.courseCode);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+    const questions = await questionService.getAllByCourse(course._id);
+    res.status(200).json({ ...course.toObject(), questions });
   } catch (err) {
     return next(err);
   }
