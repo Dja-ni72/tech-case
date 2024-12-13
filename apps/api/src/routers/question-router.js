@@ -45,4 +45,14 @@ router.delete(
   }
 );
 
+/**
+ * Duplicate a question by its ID
+ */
+router.put(
+  "/api/courses/:courseId/questions/:questionId/duplicate",
+  (req, res, next) => {
+    questionController.duplicate(req, res, next);
+  }
+);
+
 module.exports = router;

@@ -70,10 +70,33 @@ const remove = async (req, res, next) => {
   }
 };
 
+/**
+ * Duplicate a question
+ */
+const duplicate = async (req, res, next) => {
+  try {
+    const { courseId, questionId } = req.params;
+    const question = await questionService.getById(questionId);
+    if (!question) {
+      return res.status(404).json({ message: "Question not found" });
+    }
+    // Exclude the `_id` field and duplicate the question
+    const { _id, ...questionData } = question.toObject();
+    const duplicatedQuestion = await questionService.create(courseId, {
+      ...questionData,
+      title: `${question.title} (Copy)`,
+    });
+    res.status(201).json(duplicatedQuestion);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   list,
   get,
   create,
   update,
   remove,
+  duplicate,
 };

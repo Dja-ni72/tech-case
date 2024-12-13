@@ -23,9 +23,9 @@ const getById = (questionId) => {
  * @param {Question} question Question properties
  * @returns {Promise<Question>} Created question
  */
-const create = async (courseId, question) => {
+const create = async (courseId, questionData) => {
   const newQuestion = new QuestionModel({
-    ...question,
+    ...questionData,
     course: courseId,
   });
 

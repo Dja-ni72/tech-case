@@ -95,6 +95,35 @@ const CourseDetail = () => {
     }
   };
 
+  const handleDuplicate = async (question: Question) => {
+    if (!course) return;
+
+    try {
+      const response = await fetch(
+        `/api/courses/${course._id}/questions/${question._id}/duplicate`,
+        {
+          method: "PUT",
+        }
+      );
+      if (!response.ok) throw new Error("Failed to duplicate question");
+
+      const duplicatedQuestion: Question = await response.json();
+
+      // Update the course's questions in state
+      setCourse((prev) =>
+        prev
+          ? {
+              ...prev,
+              questions: [...prev.questions, duplicatedQuestion],
+            }
+          : null
+      );
+    } catch (error) {
+      console.error("Failed to duplicate question", error);
+      setError("Failed to duplicate the question. Please try again later.");
+    }
+  };
+
   if (!course) return <p>Loading...</p>;
 
   return (
@@ -116,8 +145,13 @@ const CourseDetail = () => {
           bordered
           dataSource={course.questions}
           renderItem={(question) => (
-            <List.Item onClick={() => handleQuestionClick(question)} style={{ cursor: "pointer" }}>
-              {question.title}
+            <List.Item
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+            >
+              <span onClick={() => handleQuestionClick(question)} style={{ cursor: "pointer" }}>
+                {question.title}
+              </span>
+              <Button onClick={() => handleDuplicate(question)}>Duplicate</Button>
             </List.Item>
           )}
         />
