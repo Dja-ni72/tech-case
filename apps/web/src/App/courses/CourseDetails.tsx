@@ -1,3 +1,4 @@
+import { Alert } from "antd"; 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Modal, Input, Button, List } from "antd";
@@ -26,7 +27,7 @@ const CourseDetail = () => {
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); 
 
   // Fetch course details
   useEffect(() => {
@@ -36,8 +37,8 @@ const CourseDetail = () => {
         if (!response.ok) throw new Error("Failed to fetch course details");
         const data: Course = await response.json();
         setCourse(data);
-      } catch (error) {
-        console.error("Failed to fetch course details", error);
+      } catch (err) {
+        console.error("Failed to fetch course details", err);
         setError("Failed to load course details. Please try again later.");
       }
     };
@@ -87,8 +88,8 @@ const CourseDetail = () => {
           : null
       );
       setIsModalOpen(false);
-    } catch (error) {
-      console.error("Failed to update question", error);
+    } catch (err) {
+      console.error("Failed to update question", err);
       setError("Failed to update the question. Please try again later.");
     } finally {
       setLoading(false);
@@ -118,8 +119,8 @@ const CourseDetail = () => {
             }
           : null
       );
-    } catch (error) {
-      console.error("Failed to duplicate question", error);
+    } catch (err) {
+      console.error("Failed to duplicate question", err);
       setError("Failed to duplicate the question. Please try again later.");
     }
   };
@@ -128,6 +129,17 @@ const CourseDetail = () => {
 
   return (
     <div style={{ padding: "20px" }}>
+      {error && (
+        <Alert
+          message="Error"
+          description={error}
+          type="error"
+          showIcon
+          closable
+          onClose={() => setError(null)} 
+          style={{ marginBottom: "20px" }}
+        />
+      )}
       <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
         <button onClick={() => navigate("/courses")} style={{ marginRight: "10px" }}>
           Go back to courses
